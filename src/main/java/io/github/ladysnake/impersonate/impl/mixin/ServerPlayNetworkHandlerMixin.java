@@ -46,7 +46,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             }
         } else if (packet instanceof GameMessageS2CPacket gamePacket) {
             if (this.existsImpersonator()) {
-                Text resolvedText = ((RecipientAwareText) gamePacket.content()).impersonateResolveAll(player);
+                Text resolvedText = ((RecipientAwareText) gamePacket.content().copy()).impersonateResolveAll(player);
                 return new GameMessageS2CPacket(resolvedText, gamePacket.overlay());
             }
         } else if (packet instanceof PlayerListS2CPacket listPacket) {

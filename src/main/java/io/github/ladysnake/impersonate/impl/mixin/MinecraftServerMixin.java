@@ -57,7 +57,7 @@ public abstract class MinecraftServerMixin implements CommandOutput {
     @Unique
     private Text impersonate$reveal(Text message) {
         if (this.getOverworld() == null || this.getGameRules().getBoolean(ImpersonateGamerules.LOG_REVEAL_IMPERSONATIONS)) {
-            return ((RecipientAwareText) message).impersonateResolveAll(this);
+            return ((RecipientAwareText) message.copy()).impersonateResolveAll(this);
         }
         return message;
     }

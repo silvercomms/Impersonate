@@ -28,7 +28,7 @@ public abstract class MutableTextMixin implements Text, RecipientAwareText {
     @Override
     public Text impersonateResolveAll(CommandOutput recipient) {
         this.impersonateResolve(recipient);
-        this.getSiblings().replaceAll(text -> ((RecipientAwareText) text).impersonateResolveAll(recipient));
+        this.getSiblings().replaceAll(text -> ((RecipientAwareText) text.copy()).impersonateResolveAll(recipient));
         return this;
     }
 }

@@ -44,7 +44,7 @@ public interface TextMixin extends RecipientAwareText {
         MutableText text = this.copy();
         ((RecipientAwareText)text).impersonateResolve(recipient);
         for (Text sibling : this.getSiblings()) {
-            text.append(((RecipientAwareText) sibling).impersonateResolveAll(recipient));
+            text.append(((RecipientAwareText) sibling.copy()).impersonateResolveAll(recipient));
         }
         text.setStyle(this.getStyle());
         return text;

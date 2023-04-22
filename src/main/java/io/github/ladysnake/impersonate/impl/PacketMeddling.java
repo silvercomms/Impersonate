@@ -68,11 +68,12 @@ public final class PacketMeddling {
     }
 
     public static ChatMessageS2CPacket resolveChatMessage(ChatMessageS2CPacket chatPacket, ServerPlayerEntity player) {
-        Optional<Text> unsignedContent = chatPacket.message().unsignedContent().map(t -> ((RecipientAwareText) t).impersonateResolveAll(player));
+        Optional<Text> unsignedContent = chatPacket.message().unsignedContent().map(t -> ((RecipientAwareText) t.copy()).impersonateResolveAll(player));
         Text signedContent = chatPacket.message().signedBody().content().decorated();
-        Text name = ((RecipientAwareText) chatPacket.serializedParameters().name()).impersonateResolveAll(player);
-        @Nullable Text targetName = chatPacket.serializedParameters().targetName() instanceof RecipientAwareText t
-            ? t.impersonateResolveAll(player)
+        Text name = ((RecipientAwareText) chatPacket.serializedParameters().name().copy()).impersonateResolveAll(player);
+        @Nullable Text unresolvedTargetName = chatPacket.serializedParameters().targetName();
+        @Nullable Text targetName = unresolvedTargetName != null
+            ? ((RecipientAwareText) unresolvedTargetName.copy()).impersonateResolveAll(player)
             : null;
 
         // God, I wish we had a Record#copy method in this language

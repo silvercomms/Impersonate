@@ -51,7 +51,11 @@ public class ImpersonateTextContent implements RecipientAwareTextContent {
 
     @Override
     public void impersonateResolve(CommandOutput recipient) {
-        state = !(recipient instanceof PlayerEntity player) || player.getGameProfile().getName().equals(this.trueText) ? State.TRUE : (shouldBeRevealedBy(player)? State.BOTH : State.FAKE);
+        state = !(recipient instanceof PlayerEntity player) || player.getGameProfile().getName().equals(this.trueText) ?
+            State.TRUE :
+            (shouldBeRevealedBy(player) ?
+                State.BOTH :
+                State.FAKE);
     }
 
     public boolean isRevealed() {

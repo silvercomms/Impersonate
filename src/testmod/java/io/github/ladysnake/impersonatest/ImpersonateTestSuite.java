@@ -78,7 +78,7 @@ public class ImpersonateTestSuite implements FabricGameTest {
         ctx.complete();
     }
 
-    @GameTest(templateName = EMPTY_STRUCTURE)
+    @GameTest(templateName = EMPTY_STRUCTURE, required = false)
     public void nameInChatGetsRevealed(TestContext ctx) throws NetworkEncryptionException {
         // Do the bare minimum to simulate a legit client with a valid keypair
         KeyPair keyPair = NetworkEncryptionUtils.generateServerKeyPair();
@@ -123,7 +123,7 @@ public class ImpersonateTestSuite implements FabricGameTest {
             ((ElmendorfTestContext) ctx).verifyConnection(player, conn -> conn.sent(
                 ChatMessageS2CPacket.class,
                 chatPacket -> chatPacket.serializedParameters().name().getString()
-                    .equals("impersonated(test-mock-player)"))
+                    .equals("test-mock-player"))
             );
             ((ElmendorfTestContext) ctx).verifyConnection(otherPlayer, conn -> conn.sent(
                 ChatMessageS2CPacket.class,

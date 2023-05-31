@@ -1,6 +1,6 @@
 /*
  * Impersonate
- * Copyright (C) 2020-2022 Ladysnake
+ * Copyright (C) 2020-2023 Ladysnake
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class ImpersonateTextContent implements RecipientAwareTextContent {
     private final String trueText;
     private final String fakedText;
-    private boolean revealed;
+    private State state;
 
     public static TextContent get(PlayerEntity player) {
         return get(player, false);
@@ -39,23 +39,23 @@ public class ImpersonateTextContent implements RecipientAwareTextContent {
     public static TextContent get(PlayerEntity player, boolean reveal) {
         Impersonator impersonator = Impersonator.get(player);
         String fakeName = impersonator.getEditedProfile().getName();
-        String trueText = String.format("%s(%s)", fakeName, player.getGameProfile().getName());
-        return new ImpersonateTextContent(trueText, fakeName, reveal);
+        String trueName = player.getGameProfile().getName();
+        return new ImpersonateTextContent(trueName, fakeName, reveal ? State.BOTH : State.FAKE);
     }
 
-    private ImpersonateTextContent(String trueText, String fakedText, boolean revealed) {
+    private ImpersonateTextContent(String trueText, String fakedText, State state) {
         this.trueText = trueText;
         this.fakedText = fakedText;
-        this.revealed = revealed;
+        this.state = state;
     }
 
     @Override
     public void impersonateResolve(CommandOutput recipient) {
-        revealed = !(recipient instanceof PlayerEntity player) || shouldBeRevealedBy(player);
+        state = !(recipient instanceof PlayerEntity player) || player.getGameProfile().getName().equals(this.trueText) ? State.TRUE : (shouldBeRevealedBy(player)? State.BOTH : State.FAKE);
     }
 
     public boolean isRevealed() {
-        return revealed;
+        return state != State.FAKE;
     }
 
     public static boolean shouldBeRevealedBy(PlayerEntity player) {
@@ -75,11 +75,21 @@ public class ImpersonateTextContent implements RecipientAwareTextContent {
     }
 
     public String getString() {
-        return this.revealed ? this.trueText : this.fakedText;
+        return switch (this.state) {
+            case TRUE -> this.trueText;
+            case FAKE -> this.fakedText;
+            case BOTH -> this.fakedText + "(" + this.trueText + ")";
+        };
     }
 
     @Override
     public String toString() {
-        return "impersonate:literal{" + this.fakedText + "/" + this.trueText + ", revealed=" + this.revealed + "}";
+        return "impersonate:literal{" + this.fakedText + "/" + this.trueText + ", state=" + this.state + "}";
+    }
+
+    enum State {
+        TRUE,
+        BOTH,
+        FAKE
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Impersonate
- * Copyright (C) 2020-2022 Ladysnake
+ * Copyright (C) 2020-2023 Ladysnake
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ public final class ImpersonateClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(ServerPlayerSkins.RELOAD_SKIN_PACKET, (client, handler, buf, responseSender) -> client.execute(() -> {
             assert client.player != null;
-            ((AbstractClientPlayerEntityAccessor) client.player).setPlayerListEntry(null);
+            //((AbstractClientPlayerEntityAccessor) client.player).setPlayerListEntry(null);
         }));
     }
 }

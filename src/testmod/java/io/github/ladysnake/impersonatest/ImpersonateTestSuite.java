@@ -30,9 +30,11 @@ import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageChain;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
@@ -85,15 +87,18 @@ public class ImpersonateTestSuite implements FabricGameTest {
         Signer signer = Signer.create(keyPair.getPrivate(), "SHA256withRSA");
         MessageChain.Packer messagePacker = new MessageChain(senderUuid, UUID.randomUUID()).getPacker(signer);
         LastSeenMessageList lastSeenMessages = LastSeenMessageList.EMPTY;
+        ConnectedClientData connectedClientData = ConnectedClientData.createDefault(new GameProfile(UUID.randomUUID(), "test-mock-player"));
         ServerPlayerEntity player = new ServerPlayerEntity(
             ctx.getWorld().getServer(),
             ctx.getWorld(),
-            new GameProfile(senderUuid, "test-mock-player")
+            connectedClientData.gameProfile(),
+            connectedClientData.syncedOptions()
         );
         player.networkHandler = new ServerPlayNetworkHandler(
             ctx.getWorld().getServer(),
             new MockClientConnection(NetworkSide.CLIENTBOUND),
-            player
+            player,
+            connectedClientData
         );
         Impersonator.get(player).impersonate(IMPERSONATION_KEY, new GameProfile(UUID.randomUUID(), "impersonated"));
         String text = "Hi";
